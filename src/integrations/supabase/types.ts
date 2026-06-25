@@ -14,7 +14,164 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      credits: {
+        Row: {
+          cycle_end: string
+          cycle_start: string
+          id: string
+          remaining: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cycle_end?: string
+          cycle_start?: string
+          id?: string
+          remaining?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cycle_end?: string
+          cycle_start?: string
+          id?: string
+          remaining?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          generation_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          generation_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          generation_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generations: {
+        Row: {
+          created_at: string
+          id: string
+          input: Json | null
+          niche: string | null
+          payload: Json
+          platform: string | null
+          theme: string | null
+          title: string | null
+          type: Database["public"]["Enums"]["generation_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          input?: Json | null
+          niche?: string | null
+          payload: Json
+          platform?: string | null
+          theme?: string | null
+          title?: string | null
+          type: Database["public"]["Enums"]["generation_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          input?: Json | null
+          niche?: string | null
+          payload?: Json
+          platform?: string | null
+          theme?: string | null
+          title?: string | null
+          type?: Database["public"]["Enums"]["generation_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string
+          current_period_start: string
+          id: string
+          plan: Database["public"]["Enums"]["plan_type"]
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          plan?: Database["public"]["Enums"]["plan_type"]
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          plan?: Database["public"]["Enums"]["plan_type"]
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +180,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      generation_type: "script" | "carousel"
+      plan_type: "free" | "pro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +308,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      generation_type: ["script", "carousel"],
+      plan_type: ["free", "pro"],
+    },
   },
 } as const
