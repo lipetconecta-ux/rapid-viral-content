@@ -86,7 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Gere roteiros virais, carrosséis de alta conversão e conteúdos otimizados para Instagram, TikTok, YouTube Shorts e Facebook.",
       },
       { name: "author", content: "Postviral.AI" },
-      { property: "og:title", content: "Postviral.AI — Conteúdo viral com IA" },
+      { property: "og:title", content: "Postviral.AI — Crie conteúdos virais em segundos com IA" },
       {
         property: "og:description",
         content:
@@ -94,6 +94,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Postviral.AI — Crie conteúdos virais em segundos com IA" },
+      { name: "description", content: "AI-powered SaaS platform for creating viral content for social media." },
+      { property: "og:description", content: "AI-powered SaaS platform for creating viral content for social media." },
+      { name: "twitter:description", content: "AI-powered SaaS platform for creating viral content for social media." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ac6490e6-69d9-4d0a-9381-cd87334c4329/id-preview-97a03fed--9cad7b52-44a6-4a24-95ff-7e20922638b8.lovable.app-1782351174254.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ac6490e6-69d9-4d0a-9381-cd87334c4329/id-preview-97a03fed--9cad7b52-44a6-4a24-95ff-7e20922638b8.lovable.app-1782351174254.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
