@@ -167,10 +167,7 @@ function mockCarousel(input: CarouselInput): CarouselPayload {
 }
 
 // ----------------- Server functions -----------------
-async function ensureAndConsumeCredit(
-  supabase: ReturnType<typeof requireSupabaseAuth> extends never ? never : any,
-  userId: string,
-) {
+async function ensureAndConsumeCredit(supabase: any, userId: string) {
   // Read plan
   const { data: sub } = await supabase
     .from("subscriptions")
