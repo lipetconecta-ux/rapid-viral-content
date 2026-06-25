@@ -216,8 +216,8 @@ export const generateScript = createServerFn({ method: "POST" })
         niche: data.niche,
         theme: data.theme,
         platform: data.platform,
-        payload: payload as unknown as Record<string, unknown>,
-        input: data as unknown as Record<string, unknown>,
+        payload: payload as any,
+        input: data as any,
       })
       .select()
       .single();
@@ -246,8 +246,8 @@ export const generateCarousel = createServerFn({ method: "POST" })
         niche: data.niche,
         theme: data.theme,
         platform: null,
-        payload: payload as unknown as Record<string, unknown>,
-        input: data as unknown as Record<string, unknown>,
+        payload: payload as any,
+        input: data as any,
       })
       .select()
       .single();
