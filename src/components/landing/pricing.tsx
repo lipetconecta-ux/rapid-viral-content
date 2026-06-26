@@ -4,14 +4,14 @@ import { Check } from "lucide-react";
 
 const plans = [
   {
-    name: "Gratuito",
-    price: "R$ 0",
+    name: "Starter",
+    price: "R$ 27,90",
     period: "/mês",
-    desc: "Perfeito para começar e testar a plataforma.",
-    cta: "Começar grátis",
+    desc: "Para quem está começando a criar conteúdo viral.",
+    cta: "Assinar Starter",
     highlighted: false,
     features: [
-      "10 gerações por mês",
+      "100 gerações por mês",
       "Gerador de roteiros",
       "Gerador de carrosséis",
       "Histórico de gerações",
@@ -20,18 +20,32 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "R$ 47",
+    price: "R$ 37,90",
     period: "/mês",
-    desc: "Para criadores e profissionais que precisam de escala.",
+    desc: "Para criadores que precisam de mais volume e recursos.",
     cta: "Assinar Pro",
     highlighted: true,
     features: [
-      "Gerações ilimitadas",
-      "Acesso prioritário a novos recursos",
+      "500 gerações por mês",
+      "Gerador de roteiros e carrosséis",
       "Favoritos ilimitados",
-      "Exportação avançada",
-      "Suporte prioritário",
       "Histórico completo",
+      "Suporte prioritário",
+    ],
+  },
+  {
+    name: "Premium",
+    price: "R$ 47,90",
+    period: "/mês",
+    desc: "Para profissionais e agências em escala máxima.",
+    cta: "Assinar Premium",
+    highlighted: false,
+    features: [
+      "Gerações ilimitadas",
+      "Acesso antecipado a novos recursos",
+      "Exportação avançada",
+      "Suporte VIP dedicado",
+      "Múltiplas marcas/perfis",
     ],
   },
 ];
@@ -49,7 +63,7 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="mt-16 grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+        <div className="mt-16 grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
           {plans.map((p) => (
             <div
               key={p.name}
