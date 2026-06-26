@@ -167,33 +167,16 @@ function mockCarousel(input: CarouselInput): CarouselPayload {
 }
 
 // ----------------- Server functions -----------------
-async function ensureAndConsumeCredit(supabase: any, userId: string) {
-  // Read plan
-  const { data: sub } = await supabase
-    .from("subscriptions")
-    .select("plan")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (sub?.plan === "pro") return; // Pro: unlimited
-
-  const { data: credit, error: cErr } = await supabase
-    .from("credits")
-    .select("remaining")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (cErr) throw new Error("Falha ao verificar créditos");
-  if (!credit || credit.remaining <= 0) {
-    throw new Error("CREDITS_EXHAUSTED");
+async function ensureAndConsumeCredit(supabase: any) {
+  const { error } = await supabase.rpc("consume_credit");
+  if (error) {
+    if (error.message?.includes("CREDITS_EXHAUSTED")) {
+      throw new Error("CREDITS_EXHAUSTED");
+    }
+    throw new Error("Falha ao verificar créditos");
   }
-
-  const { error: uErr } = await supabase
-    .from("credits")
-    .update({ remaining: credit.remaining - 1 })
-    .eq("user_id", userId);
-  if (uErr) throw new Error("Falha ao decrementar créditos");
 }
+
 
 export const generateScript = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
