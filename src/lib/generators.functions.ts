@@ -183,7 +183,7 @@ export const generateScript = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => scriptInputSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    await ensureAndConsumeCredit(supabase, userId);
+    await ensureAndConsumeCredit(supabase);
 
     // TODO: Replace this block with a real OpenAI / Lovable AI Gateway call.
     // const completion = await aiGateway.chat.completions.create({ ... });
@@ -214,7 +214,7 @@ export const generateCarousel = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => carouselInputSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    await ensureAndConsumeCredit(supabase, userId);
+    await ensureAndConsumeCredit(supabase);
 
     // TODO: Replace this block with a real OpenAI / Lovable AI Gateway call.
     await sleep(1200);
