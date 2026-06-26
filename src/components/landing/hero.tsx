@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Star } from "lucide-react";
-import heroMockup from "@/assets/hero-mockup.jpg";
+import heroMockup from "@/assets/hero-mockup-ptbr.jpg.asset.json";
 
 export function Hero() {
   return (
@@ -69,7 +69,7 @@ export function Hero() {
           <div className="absolute -inset-x-4 -inset-y-8 -z-10 bg-gradient-brand-soft blur-3xl rounded-[3rem] opacity-60" />
           <div className="rounded-2xl border border-border bg-card/50 p-2 shadow-card-elev backdrop-blur">
             <img
-              src={heroMockup}
+              src={heroMockup.url}
               alt="Painel Postviral.AI gerando roteiros virais"
               width={1536}
               height={1024}
