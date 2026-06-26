@@ -167,40 +167,23 @@ function mockCarousel(input: CarouselInput): CarouselPayload {
 }
 
 // ----------------- Server functions -----------------
-async function ensureAndConsumeCredit(supabase: any, userId: string) {
-  // Read plan
-  const { data: sub } = await supabase
-    .from("subscriptions")
-    .select("plan")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (sub?.plan === "pro") return; // Pro: unlimited
-
-  const { data: credit, error: cErr } = await supabase
-    .from("credits")
-    .select("remaining")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (cErr) throw new Error("Falha ao verificar créditos");
-  if (!credit || credit.remaining <= 0) {
-    throw new Error("CREDITS_EXHAUSTED");
+async function ensureAndConsumeCredit(supabase: any) {
+  const { error } = await supabase.rpc("consume_credit");
+  if (error) {
+    if (error.message?.includes("CREDITS_EXHAUSTED")) {
+      throw new Error("CREDITS_EXHAUSTED");
+    }
+    throw new Error("Falha ao verificar créditos");
   }
-
-  const { error: uErr } = await supabase
-    .from("credits")
-    .update({ remaining: credit.remaining - 1 })
-    .eq("user_id", userId);
-  if (uErr) throw new Error("Falha ao decrementar créditos");
 }
+
 
 export const generateScript = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => scriptInputSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    await ensureAndConsumeCredit(supabase, userId);
+    await ensureAndConsumeCredit(supabase);
 
     // TODO: Replace this block with a real OpenAI / Lovable AI Gateway call.
     // const completion = await aiGateway.chat.completions.create({ ... });
@@ -231,7 +214,7 @@ export const generateCarousel = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => carouselInputSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    await ensureAndConsumeCredit(supabase, userId);
+    await ensureAndConsumeCredit(supabase);
 
     // TODO: Replace this block with a real OpenAI / Lovable AI Gateway call.
     await sleep(1200);
@@ -331,19 +314,13 @@ export const deleteGeneration = createServerFn({ method: "POST" })
 export const upgradeToPro = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    // TODO: integrar Stripe / Mercado Pago aqui. Hoje só simula upgrade.
-    const { error } = await context.supabase
-      .from("subscriptions")
-      .update({
-        plan: "pro",
-        status: "active",
-        current_period_start: new Date().toISOString(),
-        current_period_end: new Date(Date.now() + 30 * 86400 * 1000).toISOString(),
-      })
-      .eq("user_id", context.userId);
+    // TODO: integrar Stripe / Mercado Pago aqui. Hoje só simula upgrade
+    // através da função SECURITY DEFINER `upgrade_to_pro`.
+    const { error } = await context.supabase.rpc("upgrade_to_pro");
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
 
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
