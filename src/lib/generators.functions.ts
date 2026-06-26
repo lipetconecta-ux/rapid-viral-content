@@ -178,10 +178,9 @@ export const generateScript = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     await ensureAndConsumeCredit(supabase);
 
-    // TODO: Replace this block with a real OpenAI / Lovable AI Gateway call.
-    // const completion = await aiGateway.chat.completions.create({ ... });
-    await sleep(1200);
-    const payload = mockScript(data);
+    const { aiGenerateJSON } = await import("./ai-gateway.server");
+    const { system, user } = buildScriptPrompt(data);
+    const payload = await aiGenerateJSON<ScriptPayload>({ system, user, schema: SCRIPT_SCHEMA, toolName: "emit_script" });
 
     const { data: row, error } = await supabase
       .from("generations")
