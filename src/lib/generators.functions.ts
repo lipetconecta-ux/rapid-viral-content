@@ -314,19 +314,13 @@ export const deleteGeneration = createServerFn({ method: "POST" })
 export const upgradeToPro = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    // TODO: integrar Stripe / Mercado Pago aqui. Hoje só simula upgrade.
-    const { error } = await context.supabase
-      .from("subscriptions")
-      .update({
-        plan: "pro",
-        status: "active",
-        current_period_start: new Date().toISOString(),
-        current_period_end: new Date(Date.now() + 30 * 86400 * 1000).toISOString(),
-      })
-      .eq("user_id", context.userId);
+    // TODO: integrar Stripe / Mercado Pago aqui. Hoje só simula upgrade
+    // através da função SECURITY DEFINER `upgrade_to_pro`.
+    const { error } = await context.supabase.rpc("upgrade_to_pro");
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
 
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
