@@ -53,117 +53,110 @@ export interface CarouselPayload {
   caption: string;
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+// ----------------- AI prompt builders -----------------
+const PLATFORM_LABEL: Record<ScriptInput["platform"], string> = {
+  instagram: "Instagram Reels",
+  tiktok: "TikTok",
+  facebook: "Facebook Reels",
+  youtube_shorts: "YouTube Shorts",
+};
 
-// ----------------- Mock generators -----------------
-function mockScript(input: ScriptInput): ScriptPayload {
-  const platformLabel: Record<ScriptInput["platform"], string> = {
-    instagram: "Instagram Reels",
-    tiktok: "TikTok",
-    facebook: "Facebook Reels",
-    youtube_shorts: "YouTube Shorts",
-  };
-  return {
-    title: `3 erros que estão te impedindo de crescer em ${input.niche}`,
-    hook: `Se você está em ${input.niche} e ainda não viralizou, provavelmente está cometendo um destes 3 erros — eu mesmo cometi por 2 anos.`,
-    scenes: [
-      {
-        name: "Cena 1 — Abertura forte (0-3s)",
-        description: `Plano fechado no rosto, olhar direto na câmera. Diga o hook com energia. Tom ${input.tone}.`,
-        duration: "0-3s",
+const SCRIPT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["title", "hook", "scenes", "onScreenTexts", "bRoll", "cta", "caption", "hashtags"],
+  properties: {
+    title: { type: "string", description: "Título magnético do vídeo, específico ao tema." },
+    hook: { type: "string", description: "Gancho dos primeiros 3 segundos. Frase única, forte, sem clichês." },
+    scenes: {
+      type: "array",
+      minItems: 4,
+      maxItems: 6,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["name", "description", "duration"],
+        properties: {
+          name: { type: "string", description: "Ex: 'Cena 2 — Desenvolvimento'." },
+          description: { type: "string", description: "Fala/ação ESPECÍFICA dessa cena. Sem repetir outras cenas." },
+          duration: { type: "string", description: "Ex: '3-8s'." },
+        },
       },
-      {
-        name: "Cena 2 — Erro #1",
-        description: `Mostre o primeiro erro com clareza. Use exemplo real e visual de algo errado vs certo. Tema: ${input.theme}.`,
-        duration: "3-10s",
-      },
-      {
-        name: "Cena 3 — Erro #2",
-        description: "Conte uma micro-história sua: quando você percebeu esse erro e o que aconteceu depois que corrigiu.",
-        duration: "10-20s",
-      },
-      {
-        name: "Cena 4 — Erro #3 + Virada",
-        description: `Apresente o terceiro erro e dê o insight principal alinhado ao objetivo: "${input.goal}".`,
-        duration: `20-${input.duration}`,
-      },
-      {
-        name: "Cena 5 — Encerramento + CTA",
-        description: "Plano aberto, sorrindo. Convide para comentar e seguir.",
-        duration: "Últimos 3s",
-      },
-    ],
-    onScreenTexts: [
-      "ERRO #1 ⚠️",
-      `Por que ninguém te conta isso?`,
-      "ERRO #2 🚨",
-      "Eu também caía nessa...",
-      "ERRO #3 (o pior)",
-      "SALVA esse vídeo 👇",
-    ],
-    bRoll: [
-      "Print de notificações de seguidores entrando",
-      "Time-lapse editando vídeo no celular",
-      `Imagens de referência do nicho ${input.niche}`,
-      "Reação genuína no rosto ao revelar o erro #3",
-      "Texto animado destacando o número de cada erro",
-    ],
-    cta: "Comenta aqui qual desses erros você já cometeu — e segue pra parte 2 amanhã.",
-    caption: `Você cometia algum desses 3 erros? 🤯\n\nSe esse vídeo te ajudou:\n→ SALVA pra rever\n→ COMPARTILHA com alguém que precisa ouvir isso\n→ COMENTA "EU" se você se identificou\n\nMe segue pra mais conteúdo sobre ${input.niche}.\n\nOtimizado para ${platformLabel[input.platform]}.`,
-    hashtags: [
-      `#${input.niche.toLowerCase().replace(/\s+/g, "")}`,
-      "#dicas",
-      "#viral",
-      "#reels",
-      "#conteudoorganico",
-      "#marketingdigital",
-      "#empreendedorismo",
-      "#crescimento",
-      "#instagram",
-      "#criadoresdeconteudo",
-    ],
-  };
+    },
+    onScreenTexts: { type: "array", items: { type: "string" }, minItems: 4, maxItems: 8 },
+    bRoll: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 6 },
+    cta: { type: "string" },
+    caption: { type: "string", description: "Legenda pronta com quebras de linha e emojis." },
+    hashtags: { type: "array", items: { type: "string" }, minItems: 6, maxItems: 12 },
+  },
+};
+
+function buildScriptPrompt(input: ScriptInput): { system: string; user: string } {
+  const system = `Você é um roteirista sênior de vídeos curtos virais (${PLATFORM_LABEL[input.platform]}).
+Escreve em português do Brasil, direto, com gancho forte e cenas DIFERENTES entre si.
+Regras obrigatórias:
+- Cada cena tem um propósito ÚNICO (gancho, problema, virada, prova, CTA). Nunca repita ideias entre cenas.
+- Fale do tema específico do usuário, não use lugares-comuns ("trabalhe duro", "acredite em você").
+- Tom: ${input.tone}. Nicho: ${input.niche}.
+- Inclua dados, exemplos concretos, números ou micro-histórias quando fizer sentido.
+- Hashtags relevantes ao nicho, sem genéricos vazios tipo #viral #fyp sozinhos.`;
+  const user = `Crie um roteiro para ${PLATFORM_LABEL[input.platform]} com duração ${input.duration}.
+Nicho: ${input.niche}
+Tema central: ${input.theme}
+Objetivo do vídeo: ${input.goal}
+Tom: ${input.tone}
+
+Entregue o roteiro completo no formato estruturado.`;
+  return { system, user };
 }
 
-function mockCarousel(input: CarouselInput): CarouselPayload {
-  const intros: Record<CarouselInput["structure"], string> = {
-    AIDA: "Atenção: o que ninguém te conta sobre ",
-    PAS: "Você sofre com ",
-    Storytelling: "Tudo mudou pra mim quando eu entendi isso sobre ",
-    Lista: `${input.slides - 2} verdades sobre `,
-  };
+const CAROUSEL_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["title", "slides", "cta", "caption"],
+  properties: {
+    title: { type: "string" },
+    slides: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["n", "text", "visual"],
+        properties: {
+          n: { type: "integer" },
+          text: { type: "string", description: "Texto do slide. ÚNICO, sem repetir conteúdo de outros slides." },
+          visual: { type: "string", description: "Direção visual específica desse slide (layout, cor, elemento)." },
+        },
+      },
+    },
+    cta: { type: "string" },
+    caption: { type: "string" },
+  },
+};
 
-  const slides = Array.from({ length: input.slides }).map((_, i) => {
-    const n = i + 1;
-    if (n === 1) {
-      return {
-        n,
-        text: `${intros[input.structure]}${input.theme}`,
-        visual:
-          "Capa impactante: tipografia grande, fundo escuro com gradiente violeta→rosa, foto de impacto centralizada.",
-      };
-    }
-    if (n === input.slides) {
-      return {
-        n,
-        text: `Salva esse carrossel e me segue pra mais sobre ${input.niche}.`,
-        visual: "Slide final com seta apontando pro perfil + selo de salvar 💾.",
-      };
-    }
-    return {
-      n,
-      text: `Insight #${n - 1}: ${input.structure === "PAS" && n === 2 ? `O verdadeiro problema é ${input.theme.toLowerCase()}` : `Aqui está uma verdade prática sobre ${input.theme.toLowerCase()} aplicada a ${input.niche}.`}`,
-      visual:
-        "Layout limpo, headline em destaque, ícone temático no topo, exemplo prático abaixo.",
-    };
-  });
-
-  return {
-    title: `${input.theme} — guia visual em ${input.slides} slides`,
-    slides,
-    cta: `Quer mais conteúdo assim? Me segue e ativa o sininho. Objetivo: ${input.goal}.`,
-    caption: `📌 Carrossel essencial sobre ${input.theme}.\n\nSe te ajudou:\n→ SALVA pra reler depois\n→ ENVIA pra alguém de ${input.niche}\n→ COMENTA qual slide você mais curtiu\n\n#${input.niche.toLowerCase().replace(/\s+/g, "")} #carrossel #conteudo #dicas #viral`,
+function buildCarouselPrompt(input: CarouselInput): { system: string; user: string } {
+  const structureGuide: Record<CarouselInput["structure"], string> = {
+    AIDA: "Slide 1 = Atenção (gancho impossível de ignorar). Slides do meio = Interesse + Desejo (provas, exemplos, benefícios). Último = Ação (CTA).",
+    PAS: "Slide 1 = Problema doloroso. Slides do meio = Agitação (consequências) → Solução prática passo-a-passo. Último = CTA.",
+    Storytelling: "Slide 1 = Cena inicial intrigante. Slides do meio = jornada com reviravolta. Último = lição + CTA.",
+    Lista: "Slide 1 = promessa numerada. Cada slide do meio = UM item da lista, distinto. Último = recapitulação + CTA.",
   };
+  const system = `Você é um copywriter sênior especializado em carrosséis para Instagram.
+Português do Brasil. Cada slide deve ter conteúdo ÚNICO — proibido repetir a mesma ideia em slides diferentes.
+Estrutura escolhida (${input.structure}): ${structureGuide[input.structure]}
+Regras:
+- Texto curto, escaneável, frases impactantes.
+- Concreto: dados, exemplos, comparações, mini-listas.
+- Sem clichês genéricos. Especificidade > generalidade.
+- Visual: descreva layout/cor/elemento gráfico do slide, diferente entre slides.`;
+  const user = `Crie um carrossel de EXATAMENTE ${input.slides} slides (numerados de 1 a ${input.slides}).
+Nicho: ${input.niche}
+Tema central: ${input.theme}
+Objetivo: ${input.goal}
+Estrutura: ${input.structure}
+
+Cada slide deve aprofundar/avançar — nunca repetir o anterior.`;
+  return { system, user };
 }
 
 // ----------------- Server functions -----------------
