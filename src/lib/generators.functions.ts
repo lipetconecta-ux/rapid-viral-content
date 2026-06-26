@@ -208,9 +208,11 @@ export const generateCarousel = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     await ensureAndConsumeCredit(supabase);
 
-    // TODO: Replace this block with a real OpenAI / Lovable AI Gateway call.
-    await sleep(1200);
-    const payload = mockCarousel(data);
+    const { aiGenerateJSON } = await import("./ai-gateway.server");
+    const { system, user } = buildCarouselPrompt(data);
+    const payload = await aiGenerateJSON<CarouselPayload>({ system, user, schema: CAROUSEL_SCHEMA, toolName: "emit_carousel" });
+    // Garante numeração sequencial mesmo se a IA escapar do contrato
+    payload.slides = payload.slides.map((s, i) => ({ ...s, n: i + 1 }));
 
     const { data: row, error } = await supabase
       .from("generations")
