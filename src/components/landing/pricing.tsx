@@ -11,7 +11,7 @@ const plans = [
     cta: "Assinar Starter",
     highlighted: false,
     features: [
-      "100 gerações por mês",
+      "50 gerações por mês",
       "Gerador de roteiros",
       "Gerador de carrosséis",
       "Histórico de gerações",
@@ -26,7 +26,7 @@ const plans = [
     cta: "Assinar Pro",
     highlighted: true,
     features: [
-      "500 gerações por mês",
+      "100 gerações por mês",
       "Gerador de roteiros e carrosséis",
       "Favoritos ilimitados",
       "Histórico completo",
