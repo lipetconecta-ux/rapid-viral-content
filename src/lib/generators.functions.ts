@@ -162,7 +162,7 @@ Cada slide deve aprofundar/avançar — nunca repetir o anterior.`;
 // ----------------- Server functions -----------------
 async function ensureAndConsumeCredit(userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { error } = await (supabaseAdmin.schema("private") as any).rpc("consume_credit", { _user_id: userId });
+  const { error } = await (supabaseAdmin as any).schema("private").rpc("consume_credit", { _user_id: userId });
   if (error) {
     if (error.message?.includes("CREDITS_EXHAUSTED")) {
       throw new Error("CREDITS_EXHAUSTED");
