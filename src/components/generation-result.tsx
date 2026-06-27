@@ -3,6 +3,7 @@ import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { ScriptPayload, CarouselPayload } from "@/lib/generators.functions";
+import { CarouselSlidesMockup } from "@/components/carousel-slides-mockup";
 
 function CopyButton({ text, label = "Copiar" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
