@@ -160,8 +160,9 @@ Cada slide deve aprofundar/avançar — nunca repetir o anterior.`;
 }
 
 // ----------------- Server functions -----------------
-async function ensureAndConsumeCredit(supabase: any) {
-  const { error } = await supabase.rpc("consume_credit");
+async function ensureAndConsumeCredit(userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error } = await (supabaseAdmin as any).schema("private").rpc("consume_credit", { _user_id: userId });
   if (error) {
     if (error.message?.includes("CREDITS_EXHAUSTED")) {
       throw new Error("CREDITS_EXHAUSTED");
@@ -176,7 +177,7 @@ export const generateScript = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => scriptInputSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    await ensureAndConsumeCredit(supabase);
+    await ensureAndConsumeCredit(userId);
 
     const { aiGenerateJSON } = await import("./ai-gateway.server");
     const { system, user } = buildScriptPrompt(data);
@@ -206,7 +207,7 @@ export const generateCarousel = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => carouselInputSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    await ensureAndConsumeCredit(supabase);
+    await ensureAndConsumeCredit(userId);
 
     const { aiGenerateJSON } = await import("./ai-gateway.server");
     const { system, user } = buildCarouselPrompt(data);
@@ -309,8 +310,11 @@ export const upgradeToPro = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     // TODO: integrar Stripe / Mercado Pago aqui. Hoje só simula upgrade
-    // através da função SECURITY DEFINER `upgrade_to_pro`.
-    const { error } = await context.supabase.rpc("upgrade_to_pro");
+    // através da função SECURITY DEFINER `private.upgrade_to_pro`.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await (supabaseAdmin as any)
+      .schema("private")
+      .rpc("upgrade_to_pro", { _user_id: context.userId });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
