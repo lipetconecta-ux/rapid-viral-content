@@ -177,8 +177,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      consume_credit: { Args: never; Returns: boolean }
-      upgrade_to_pro: { Args: never; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       generation_type: "script" | "carousel"
