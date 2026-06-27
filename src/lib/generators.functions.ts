@@ -207,7 +207,7 @@ export const generateCarousel = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => carouselInputSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    await ensureAndConsumeCredit(supabase);
+    await ensureAndConsumeCredit(userId);
 
     const { aiGenerateJSON } = await import("./ai-gateway.server");
     const { system, user } = buildCarouselPrompt(data);
