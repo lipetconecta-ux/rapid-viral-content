@@ -310,8 +310,11 @@ export const upgradeToPro = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     // TODO: integrar Stripe / Mercado Pago aqui. Hoje só simula upgrade
-    // através da função SECURITY DEFINER `upgrade_to_pro`.
-    const { error } = await context.supabase.rpc("upgrade_to_pro");
+    // através da função SECURITY DEFINER `private.upgrade_to_pro`.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await (supabaseAdmin as any)
+      .schema("private")
+      .rpc("upgrade_to_pro", { _user_id: context.userId });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
