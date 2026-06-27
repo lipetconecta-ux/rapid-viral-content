@@ -3,6 +3,7 @@ import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { ScriptPayload, CarouselPayload } from "@/lib/generators.functions";
+import { CarouselSlidesMockup } from "@/components/carousel-slides-mockup";
 
 function CopyButton({ text, label = "Copiar" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
@@ -124,6 +125,8 @@ export function CarouselResultCard({ payload }: { payload: CarouselPayload }) {
         <h3 className="text-xl font-bold">{payload.title}</h3>
         <CopyButton text={full} label="Copiar tudo" />
       </div>
+
+      <CarouselSlidesMockup payload={payload} />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {payload.slides.map((s) => (
