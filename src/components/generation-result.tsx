@@ -126,6 +126,8 @@ export function CarouselResultCard({ payload }: { payload: CarouselPayload }) {
         <CopyButton text={full} label="Copiar tudo" />
       </div>
 
+      <CarouselSlidesMockup payload={payload} />
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {payload.slides.map((s) => (
           <div key={s.n} className="relative rounded-xl border border-border bg-background/40 p-4">
