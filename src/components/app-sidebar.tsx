@@ -52,6 +52,13 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const isAdminFn = useServerFn(adminIsAdmin);
+  const { data: roleData } = useQuery({
+    queryKey: ["admin", "is-admin"],
+    queryFn: () => isAdminFn(),
+    staleTime: 60_000,
+  });
+  const isAdmin = Boolean(roleData?.isAdmin);
 
   const isActive = (url: string, exact?: boolean) =>
     exact ? pathname === url : pathname === url || pathname.startsWith(url + "/");
@@ -125,6 +132,28 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/app/admin")}
+                    tooltip="Admin · Debug"
+                  >
+                    <Link to="/app/admin">
+                      <ShieldAlert className="h-4 w-4" />
+                      <span>Admin · Debug</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border gap-2">
