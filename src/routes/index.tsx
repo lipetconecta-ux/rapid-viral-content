@@ -38,9 +38,9 @@ function LandingPage() {
         <Hero />
         <Benefits />
         <HowItWorks />
-        <ExampleShowcase />
         <Resources />
         <Testimonials />
+        <ExampleShowcase />
         <Pricing />
         <Faq />
         <CtaFinal />
