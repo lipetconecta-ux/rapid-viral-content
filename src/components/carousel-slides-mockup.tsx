@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { ArrowRight, Bookmark, Heart, MessageCircle, Send } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowRight, Bookmark, Download, Heart, Loader2, MessageCircle, Send } from "lucide-react";
+import { toBlob } from "html-to-image";
+import JSZip from "jszip";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { CarouselPayload } from "@/lib/generators.functions";
 
@@ -303,11 +307,83 @@ interface MockupProps {
 
 export function CarouselSlidesMockup({ payload, handle = "postviral.ai" }: MockupProps) {
   const [style, setStyle] = useState<SlideStyle>("dark");
+  const [downloading, setDownloading] = useState<"none" | "all" | number>("none");
   const total = payload.slides.length;
+  const slideRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  // 220px (preview) → 1080px (Instagram) ≈ 4.909x DPI multiplier
+  const EXPORT_PIXEL_RATIO = 1080 / 220;
+
+  const safeName = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 40) || "carrossel";
+
+  async function captureSlide(index: number): Promise<Blob> {
+    const node = slideRefs.current[index];
+    if (!node) throw new Error("Slide não encontrado");
+    const blob = await toBlob(node, {
+      pixelRatio: EXPORT_PIXEL_RATIO,
+      cacheBust: true,
+      backgroundColor: "#ffffff",
+    });
+    if (!blob) throw new Error("Falha ao gerar imagem");
+    return blob;
+  }
+
+  function triggerDownload(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function downloadOne(index: number) {
+    try {
+      setDownloading(index);
+      const blob = await captureSlide(index);
+      const base = safeName(payload.title);
+      triggerDownload(blob, `${base}-slide-${String(index + 1).padStart(2, "0")}.png`);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Erro ao baixar slide");
+    } finally {
+      setDownloading("none");
+    }
+  }
+
+  async function downloadAll() {
+    try {
+      setDownloading("all");
+      const zip = new JSZip();
+      const base = safeName(payload.title);
+      for (let i = 0; i < total; i++) {
+        const blob = await captureSlide(i);
+        const buf = await blob.arrayBuffer();
+        zip.file(`${base}-slide-${String(i + 1).padStart(2, "0")}.png`, buf);
+      }
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      triggerDownload(zipBlob, `${base}-carrossel-${style}.zip`);
+      toast.success(`${total} slides exportados em 1080×1350`);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Erro ao gerar ZIP");
+    } finally {
+      setDownloading("none");
+    }
+  }
+
+  const busy = downloading !== "none";
 
   return (
     <div className="space-y-4">
-      {/* style picker */}
+      {/* style picker + download */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs font-medium text-muted-foreground">Estilo visual:</span>
         {(Object.keys(STYLES) as SlideStyle[]).map((key) => {
@@ -334,6 +410,20 @@ export function CarouselSlidesMockup({ payload, handle = "postviral.ai" }: Mocku
             </button>
           );
         })}
+        <Button
+          type="button"
+          size="sm"
+          onClick={downloadAll}
+          disabled={busy}
+          className="ml-auto h-8 gap-1.5 bg-gradient-brand text-primary-foreground hover:opacity-90"
+        >
+          {downloading === "all" ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Download className="h-3.5 w-3.5" />
+          )}
+          Baixar tudo (.zip)
+        </Button>
       </div>
 
       {/* slides row */}
@@ -344,7 +434,12 @@ export function CarouselSlidesMockup({ payload, handle = "postviral.ai" }: Mocku
               key={s.n}
               className="group relative w-[220px] shrink-0 overflow-hidden rounded-2xl border border-border bg-card shadow-card-elev transition-transform hover:-translate-y-1"
             >
-              <div className="aspect-[4/5] w-full">
+              <div
+                ref={(el) => {
+                  slideRefs.current[i] = el;
+                }}
+                className="aspect-[4/5] w-full"
+              >
                 <Slide
                   style={style}
                   index={i}
@@ -362,14 +457,26 @@ export function CarouselSlidesMockup({ payload, handle = "postviral.ai" }: Mocku
                   <MessageCircle className="h-3 w-3" />
                   <Send className="h-3 w-3" />
                 </div>
-                <Bookmark className="h-3 w-3" />
+                <button
+                  type="button"
+                  onClick={() => downloadOne(i)}
+                  disabled={busy}
+                  className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
+                  title={`Baixar slide ${i + 1} (PNG 1080×1350)`}
+                >
+                  {downloading === i ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Download className="h-3 w-3" />
+                  )}
+                </button>
               </div>
             </div>
           ))}
         </div>
       </div>
       <p className="text-xs text-muted-foreground">
-        Dica: passe o mouse e role horizontalmente para visualizar cada slide. Formato 4:5 (1080×1350) — o que mais ocupa o feed.
+        Dica: passe o mouse e role horizontalmente para visualizar cada slide. Exportação em PNG 1080×1350 (4:5) — formato nativo do feed do Instagram.
       </p>
     </div>
   );
