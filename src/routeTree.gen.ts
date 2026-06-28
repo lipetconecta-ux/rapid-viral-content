@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermosRouteImport } from './routes/termos'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -31,6 +32,11 @@ import { Route as AuthenticatedAppAdminRouteImport } from './routes/_authenticat
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
   path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/admin': typeof AuthenticatedAppAdminRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/app/admin': typeof AuthenticatedAppAdminRoute
   '/app/carousel': typeof AuthenticatedAppCarouselRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/admin': typeof AuthenticatedAppAdminRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/privacidade'
     | '/reset-password'
+    | '/sobre'
     | '/termos'
     | '/app'
     | '/app/admin'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/privacidade'
     | '/reset-password'
+    | '/sobre'
     | '/termos'
     | '/app/admin'
     | '/app/carousel'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/privacidade'
     | '/reset-password'
+    | '/sobre'
     | '/termos'
     | '/_authenticated/app'
     | '/_authenticated/app/admin'
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SobreRoute: typeof SobreRoute
   TermosRoute: typeof TermosRoute
 }
 
@@ -257,6 +270,13 @@ declare module '@tanstack/react-router' {
       path: '/termos'
       fullPath: '/termos'
       preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -427,6 +447,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   PrivacidadeRoute: PrivacidadeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SobreRoute: SobreRoute,
   TermosRoute: TermosRoute,
 }
 export const routeTree = rootRouteImport
