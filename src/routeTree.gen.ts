@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -25,14 +31,44 @@ import { Route as AuthenticatedAppFavoritesRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppCarouselRouteImport } from './routes/_authenticated/app.carousel'
 import { Route as AuthenticatedAppAdminRouteImport } from './routes/_authenticated/app.admin'
 
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContatoRoute = ContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -106,8 +142,14 @@ const AuthenticatedAppAdminRoute = AuthenticatedAppAdminRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRoute
+  '/contato': typeof ContatoRoute
+  '/cookies': typeof CookiesRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/admin': typeof AuthenticatedAppAdminRoute
   '/app/carousel': typeof AuthenticatedAppCarouselRoute
@@ -122,8 +164,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRoute
+  '/contato': typeof ContatoRoute
+  '/cookies': typeof CookiesRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
   '/app/admin': typeof AuthenticatedAppAdminRoute
   '/app/carousel': typeof AuthenticatedAppCarouselRoute
   '/app/favorites': typeof AuthenticatedAppFavoritesRoute
@@ -139,8 +187,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRoute
+  '/contato': typeof ContatoRoute
+  '/cookies': typeof CookiesRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/admin': typeof AuthenticatedAppAdminRoute
   '/_authenticated/app/carousel': typeof AuthenticatedAppCarouselRoute
@@ -157,8 +211,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/blog'
+    | '/contato'
+    | '/cookies'
     | '/forgot-password'
+    | '/privacidade'
     | '/reset-password'
+    | '/sobre'
+    | '/termos'
     | '/app'
     | '/app/admin'
     | '/app/carousel'
@@ -173,8 +233,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/blog'
+    | '/contato'
+    | '/cookies'
     | '/forgot-password'
+    | '/privacidade'
     | '/reset-password'
+    | '/sobre'
+    | '/termos'
     | '/app/admin'
     | '/app/carousel'
     | '/app/favorites'
@@ -189,8 +255,14 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/blog'
+    | '/contato'
+    | '/cookies'
     | '/forgot-password'
+    | '/privacidade'
     | '/reset-password'
+    | '/sobre'
+    | '/termos'
     | '/_authenticated/app'
     | '/_authenticated/app/admin'
     | '/_authenticated/app/carousel'
@@ -207,12 +279,32 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BlogRoute: typeof BlogRoute
+  ContatoRoute: typeof ContatoRoute
+  CookiesRoute: typeof CookiesRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SobreRoute: typeof SobreRoute
+  TermosRoute: typeof TermosRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -220,11 +312,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forgot-password': {
       id: '/forgot-password'
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -363,8 +483,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  BlogRoute: BlogRoute,
+  ContatoRoute: ContatoRoute,
+  CookiesRoute: CookiesRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SobreRoute: SobreRoute,
+  TermosRoute: TermosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
