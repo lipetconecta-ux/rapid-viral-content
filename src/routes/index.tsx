@@ -38,6 +38,7 @@ function LandingPage() {
         <Hero />
         <Benefits />
         <HowItWorks />
+        <ExampleShowcase />
         <Resources />
         <Testimonials />
         <Pricing />
