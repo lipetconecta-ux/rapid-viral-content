@@ -13,7 +13,7 @@ export function CtaFinal() {
             Pronto para <span className="text-gradient-brand">viralizar</span>?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            Comece grátis hoje. Sem cartão de crédito. Cancele quando quiser.
+            Comece grátis com 5 gerações/mês, sem cartão de crédito. Cancele quando quiser.
           </p>
           <Button
             asChild
