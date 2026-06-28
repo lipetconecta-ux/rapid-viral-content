@@ -35,6 +35,9 @@ export function Hero() {
             Gere roteiros virais, carrosséis de alta conversão e conteúdos otimizados
             para vender mais no orgânico — Instagram, TikTok, Facebook e YouTube Shorts.
           </p>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
+            Comece grátis com <span className="font-semibold text-foreground">5 gerações/mês</span>, sem cartão de crédito.
+          </p>
 
           <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button
