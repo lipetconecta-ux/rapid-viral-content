@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/landing/how-it-works";
 import { Resources } from "@/components/landing/resources";
 import { Testimonials } from "@/components/landing/testimonials";
 import { Pricing } from "@/components/landing/pricing";
+import { ExampleShowcase } from "@/components/landing/example-showcase";
 import { Faq } from "@/components/landing/faq";
 import { CtaFinal } from "@/components/landing/cta-final";
 import { Footer } from "@/components/landing/footer";
