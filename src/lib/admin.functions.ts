@@ -2,23 +2,26 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase.rpc("has_role", {
+async function checkIsAdmin(userId: string): Promise<boolean> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin.rpc("has_role", {
     _user_id: userId,
     _role: "admin",
   });
   if (error) throw new Error("Falha ao verificar permissões");
-  if (!data) throw new Error("Acesso negado: somente administradores");
+  return Boolean(data);
+}
+
+async function assertAdmin(_supabase: any, userId: string) {
+  const ok = await checkIsAdmin(userId);
+  if (!ok) throw new Error("Acesso negado: somente administradores");
 }
 
 export const adminIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
-    return { isAdmin: Boolean(data) };
+    const isAdmin = await checkIsAdmin(context.userId);
+    return { isAdmin };
   });
 
 export const adminLookupUser = createServerFn({ method: "POST" })
