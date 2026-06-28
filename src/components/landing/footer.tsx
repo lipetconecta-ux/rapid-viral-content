@@ -1,31 +1,41 @@
 import { Logo } from "@/components/brand";
-import { Instagram, Youtube, Twitter, Linkedin } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Instagram, Youtube, Music2 } from "lucide-react";
 
-const cols = [
+// TODO: substituir pelos links reais das redes sociais da marca
+const socials = [
+  { Icon: Instagram, href: "https://instagram.com/", label: "Instagram" },
+  { Icon: Music2, href: "https://tiktok.com/", label: "TikTok" },
+  { Icon: Youtube, href: "https://youtube.com/", label: "YouTube" },
+];
+
+const cols: Array<{
+  title: string;
+  links: Array<{ label: string; href: string; external?: boolean }>;
+}> = [
   {
     title: "Produto",
     links: [
-      { label: "Recursos", href: "#recursos" },
-      { label: "Preços", href: "#precos" },
-      { label: "Depoimentos", href: "#depoimentos" },
-      { label: "FAQ", href: "#faq" },
+      { label: "Recursos", href: "/#recursos", external: true },
+      { label: "Preços", href: "/#precos", external: true },
+      { label: "Depoimentos", href: "/#depoimentos", external: true },
+      { label: "FAQ", href: "/#faq", external: true },
     ],
   },
   {
     title: "Empresa",
     links: [
-      { label: "Sobre", href: "#" },
-      { label: "Blog", href: "#" },
-      { label: "Carreiras", href: "#" },
-      { label: "Contato", href: "#" },
+      { label: "Sobre", href: "/sobre" },
+      { label: "Blog", href: "/blog" },
+      { label: "Contato", href: "/contato" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Termos", href: "#" },
-      { label: "Privacidade", href: "#" },
-      { label: "Cookies", href: "#" },
+      { label: "Termos", href: "/termos" },
+      { label: "Privacidade", href: "/privacidade" },
+      { label: "Cookies", href: "/cookies" },
     ],
   },
 ];
@@ -41,12 +51,14 @@ export function Footer() {
               A plataforma de IA para criadores que querem vender mais no orgânico.
             </p>
             <div className="mt-6 flex gap-3">
-              {[Instagram, Youtube, Twitter, Linkedin].map((Icon, i) => (
+              {socials.map(({ Icon, href, label }) => (
                 <a
-                  key={i}
-                  href="#"
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer noopener"
                   className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:border-primary/50 transition-colors"
-                  aria-label="Rede social"
+                  aria-label={label}
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -57,16 +69,27 @@ export function Footer() {
             <div key={c.title}>
               <h4 className="text-sm font-semibold">{c.title}</h4>
               <ul className="mt-4 space-y-3">
-                {c.links.map((l) => (
-                  <li key={l.label}>
-                    <a
-                      href={l.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
+                {c.links.map((l) =>
+                  l.external ? (
+                    <li key={l.label}>
+                      <a
+                        href={l.href}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {l.label}
+                      </a>
+                    </li>
+                  ) : (
+                    <li key={l.label}>
+                      <Link
+                        to={l.href}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
           ))}
