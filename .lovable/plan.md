@@ -1,61 +1,156 @@
-## Postviral.AI — Plano de Implementação
+# Plano: aumentar conversão do Postviral.AI
 
-SaaS completo de geração de conteúdo viral com IA (mockada por enquanto). Stack: TanStack Start + React + TypeScript + Tailwind v4 + Lovable Cloud (Supabase).
+Auditei o site (landing, pricing, geradores, fluxo de onboarding) com olhar de growth/CRO para SaaS de criadores. Abaixo, o que eu mudaria — agrupado por **impacto vs esforço**, do mais alto para o mais baixo.
 
-### Fase 1 — Fundação
-1. **Design system** (`src/styles.css`): tema dark (#0A0A0A bg, #111111 card), gradiente primário violet→pink (#7C3AED→#EC4899), secundária azul (#3B82F6), tokens semânticos em oklch, fonte Inter via `<link>` no `__root.tsx`.
-2. **Ativar Lovable Cloud** para auth + banco.
-3. **Schema do banco** (migration):
-   - `profiles` (id→auth.users, full_name, avatar_url)
-   - `subscriptions` (user_id, plan: 'free'|'pro', status, current_period_end)
-   - `credits` (user_id, remaining, cycle_start, cycle_end)
-   - `generations` (user_id, type: 'script'|'carousel', payload jsonb, niche, theme, platform, created_at)
-   - `favorites` (user_id, generation_id)
-   - Trigger `handle_new_user`: cria profile + subscription free + 10 créditos no signup.
-   - RLS: cada usuário só vê o que é seu. Grants explícitos para `authenticated`.
+---
 
-### Fase 2 — Landing Page (`/`)
-Navbar fixa translúcida, hero com gradiente + mockup ilustrativo gerado, seções: Benefícios (4 cards com ícones lucide), Como Funciona (3 passos), Recursos (gerador roteiros + carrosséis), Depoimentos (3-4 cards), Preços (Gratuito vs Pro), FAQ (accordion shadcn), CTA final, Footer completo. Todo conteúdo em PT-BR.
+## 🔥 Alto impacto, baixo esforço (fazer primeiro)
 
-### Fase 3 — Autenticação
-- Rota pública `/auth` com tabs login/cadastro (email+senha) + botão Google OAuth via `lovable.auth.signInWithOAuth("google")`.
-- Rota `/auth/forgot` e `/reset-password`.
-- Configurar provider Google via `supabase--configure_social_auth`.
-- Layout protegido `_authenticated/route.tsx` gerenciado pela integração.
+### 1. Prova de valor instantânea — "demo sem cadastro"
+Hoje o visitante precisa criar conta para ver a IA funcionando. Isso mata 60–80% das conversões.
+- Adicionar na home um **mini-gerador interativo** (1 geração grátis sem login, rate-limited por IP).
+- Após gerar, mostrar resultado + CTA "criar conta para salvar e gerar mais 4 grátis".
 
-### Fase 4 — Dashboard (`/_authenticated/*`)
-- Sidebar shadcn (Dashboard, Gerar Roteiro, Gerar Carrossel, Histórico, Favoritos, Perfil, Configurações) + topbar com SidebarTrigger e contador de créditos.
-- `/app` (dashboard home): 4 cards de resumo (gerados, créditos, favoritos, plano) + atalhos rápidos + últimas 5 gerações.
+### 2. Hero com vídeo/GIF do produto rodando
+A imagem estática do dashboard converte muito menos que ver a IA gerando texto em tempo real.
+- Trocar a screenshot do hero por um **loop de 8–12s** mostrando: digitar nicho → IA escrevendo roteiro → resultado pronto.
+- Manter mockup como fallback no mobile.
 
-### Fase 5 — Geradores
-- **Server functions** `src/lib/generators.functions.ts`:
-  - `generateScript({ niche, theme, goal, platform, duration, tone })` → retorna { title, hook, scenes[], onScreenTexts[], bRoll[], cta, caption, hashtags[] }
-  - `generateCarousel({ niche, theme, goal, slides, structure })` → retorna { title, slides[{n, text, visual}], cta, caption }
-  - Ambas: `requireSupabaseAuth`, valida créditos (>0 ou plano pro), decrementa crédito (se free), persiste em `generations`, delay 1.2s, retorna mock realista bem detalhado. Comentário `// TODO: integrar OpenAI aqui`.
-- **UI**: `/app/script` e `/app/carousel` com formulário shadcn + card de resultado com botão Copiar por bloco e geral, botão Favoritar.
-- Bloqueio quando créditos=0: modal/CTA de upgrade.
+### 3. Pricing — corrigir fricção
+- **Destacar o ROI**, não a feature: "100 roteiros virais por R$ 0,37 cada" em vez de só "100 gerações".
+- Adicionar **garantia de 7 dias** ("não gostou? devolvemos") em todos os planos pagos — reduz objeção de cartão.
+- Mostrar **economia em R$** no toggle anual ("Economize R$ 75/ano"), não só "2 meses grátis".
+- Remover o plano Premium do destaque visual ou tornar "ilimitado" mais concreto ("até 500/mês" — ilimitado real assusta).
 
-### Fase 6 — Histórico, Favoritos, Perfil, Upgrade
-- `/app/history`: lista com filtros (tipo, busca), ações Duplicar/Favoritar/Excluir/Ver.
-- `/app/favorites`: mesma UI filtrada.
-- `/app/profile` e `/app/settings`: editar nome, avatar, e-mail (read-only), trocar senha.
-- `/app/upgrade`: mock de checkout (botão "Assinar Pro" que só simula confirmação).
+### 4. Checkout — integrar Cakto (já conversamos)
+Sem pagamento real, não há venda. Esse é o gargalo #1.
 
-### Fase 7 — Polimento
-- Toasts (sonner) para todas as ações.
-- Loading states com Skeleton.
-- Empty states em histórico/favoritos.
-- SEO: head() único por rota + sitemap.xml + robots.txt.
-- Imagem gerada para o mockup do hero.
+### 5. Social proof real e verificável
+- Substituir avatares Pravatar por **prints reais de DMs/comentários** de clientes (ou criar 3–5 beta testers para gerar).
+- Adicionar **logos de marcas/criadores** que usam ("Usado por +X criadores", contador dinâmico).
+- Trocar o link "ver resultado" placeholder por **prints reais de posts virais** gerados pela ferramenta (com métricas: "Reel com 240k views usando este roteiro").
 
-### Detalhes técnicos
-- TanStack Query para todas as leituras (`useSuspenseQuery` + `ensureQueryData` nos loaders de `_authenticated`).
-- Tipos do banco gerados via Lovable Cloud.
-- Sem chamadas a IA real — apenas mocks ricos + estrutura pronta.
-- `attachSupabaseAuth` já wired pela integração.
-- Sem hardcode de cores em componentes — só tokens.
+---
 
-### Escopo NÃO incluído (mock/futuro)
-- Pagamento real (Stripe). Upgrade só simula.
-- E-mails transacionais customizados.
-- Geração real de IA (estrutura pronta, mock no lugar).
+## 🎯 Alto impacto, médio esforço
+
+### 6. Onboarding orientado a resultado
+Hoje o usuário cria conta e cai num dashboard vazio. Mudar para:
+- **Wizard de 3 passos** no primeiro login: nicho → tom de voz → primeiro objetivo
+- Gerar **1 roteiro automaticamente** no fim do wizard ("aqui está seu primeiro roteiro viral")
+- Mostrar progresso: "você já usou 1/10 créditos — gere mais 9 e veja o poder completo"
+
+### 7. Página de comparação Postviral vs alternativas
+Criadores comparam com ChatGPT, Copy.ai, etc. Criar `/vs/chatgpt`:
+- "Por que o ChatGPT genérico não gera virais"
+- Tabela comparativa (foco em PT-BR, hooks brasileiros, formato pronto p/ Reels)
+
+### 8. Páginas SEO por nicho/uso
+Cada uma vira porta de entrada de Google:
+- `/roteiros-para-reels`
+- `/carrossel-instagram-afiliados`
+- `/conteudo-viral-infoprodutor`
+- `/scripts-tiktok-emagrecimento` (por nicho top)
+
+Cada página: H1 com keyword, exemplo gerado pela IA, depoimento do nicho, CTA.
+
+### 9. Bloco "antes/depois"
+Mostrar lado a lado:
+- **Sem Postviral**: roteiro genérico (cinza, sem hook)
+- **Com Postviral**: roteiro com hook forte, cena a cena, CTA
+
+Visual extremamente persuasivo, fácil de fazer.
+
+### 10. Urgência/escassez ética
+- "Oferta de lançamento: 30% off nos 3 primeiros meses (válido até [data])"
+- Banner sutil no topo da landing
+
+---
+
+## 📈 Médio impacto, baixo esforço
+
+### 11. CTA flutuante no scroll
+Botão "Começar grátis" fixo no canto inferior depois que o usuário rolou 50% da página.
+
+### 12. FAQ expandido com objeções reais
+Adicionar perguntas que travam venda:
+- "Posso cancelar quando quiser?"
+- "A IA copia conteúdo de outros?"
+- "Funciona para meu nicho específico?"
+- "Os roteiros são em português do Brasil?"
+- "Posso usar para clientes (agência)?"
+
+### 13. Exit-intent popup
+Quando o mouse sair pela parte de cima: "Espera! Leve 5 roteiros grátis no seu e-mail" → captura lead.
+
+### 14. Footer com selos de confiança
+- "Pagamento seguro via Cakto"
+- "Dados protegidos LGPD"
+- "Cancele quando quiser"
+- "Suporte em PT-BR"
+
+### 15. Página de afiliados
+Criadores adoram divulgar o que usam. `/afiliados` com 30–40% recorrente atrai tráfego orgânico de graça.
+
+---
+
+## 🧪 Médio impacto, médio esforço
+
+### 16. Sistema de referral embutido
+"Indique um amigo, ganhe 10 créditos extras quando ele assinar."
+
+### 17. Email marketing pós-cadastro
+Sequência de 5 e-mails (dia 0, 1, 3, 5, 7):
+- Boas-vindas + tutorial
+- "3 hooks que viralizaram essa semana"
+- Caso de sucesso de cliente
+- Lembrete de upgrade (créditos acabando)
+- Última chance / desconto
+
+### 18. Dashboard com "métricas vaidade"
+Mostrar para o usuário logado:
+- "Você já gerou 47 roteiros"
+- "Estimativa de tempo economizado: 23 horas"
+- "Compartilhe sua conquista" (gera card pro Instagram stories)
+
+Aumenta retenção e gera marketing orgânico.
+
+---
+
+## 🚨 Problemas atuais que estão sangrando conversão
+
+1. **Sem pagamento ativo** → impossível vender
+2. **Sem demo livre** → exige fé cega antes do cadastro
+3. **Depoimentos com avatar Pravatar** → batem como falsos, derrubam credibilidade
+4. **"Ver resultado" leva pra link quebrado** → quebra confiança
+5. **Premium "ilimitado"** sem definição assusta compradores sérios
+6. **Sem garantia** em nenhum plano → maior objeção de cartão
+7. **CTA do hero não menciona "grátis"** com força suficiente
+
+---
+
+## Sugestão de sequência de implementação
+
+**Sprint 1 (essencial p/ vender):**
+- Cakto integrado (checkout funcionando)
+- Demo sem cadastro no hero
+- Garantia 7 dias nos planos
+- Substituir depoimentos por reais (ou betar com 3 pessoas reais primeiro)
+
+**Sprint 2 (otimização):**
+- Vídeo/GIF no hero
+- Wizard de onboarding
+- FAQ expandido
+- Exit-intent popup
+
+**Sprint 3 (escala):**
+- Páginas SEO por nicho
+- Sistema de afiliados
+- Email marketing
+- Página de comparação
+
+---
+
+## Pergunta antes de implementar
+
+Quer que eu implemente já a **Sprint 1** completa nessa próxima rodada (com prioridade no checkout Cakto + demo grátis no hero + garantia), ou prefere que eu comece por algum item específico da lista?
