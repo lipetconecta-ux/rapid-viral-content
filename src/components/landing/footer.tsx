@@ -1,12 +1,19 @@
 import { Logo } from "@/components/brand";
 import { Link } from "@tanstack/react-router";
-import { Instagram, Youtube, Music2 } from "lucide-react";
+import { Instagram, Youtube, Music2, ShieldCheck, Lock, RefreshCcw, MessageCircle } from "lucide-react";
 
 // TODO: substituir pelos links reais das redes sociais da marca
 const socials = [
   { Icon: Instagram, href: "https://instagram.com/", label: "Instagram" },
   { Icon: Music2, href: "https://tiktok.com/", label: "TikTok" },
   { Icon: Youtube, href: "https://youtube.com/", label: "YouTube" },
+];
+
+const trustBadges = [
+  { Icon: Lock, label: "Pagamento 100% seguro" },
+  { Icon: ShieldCheck, label: "Dados protegidos · LGPD" },
+  { Icon: RefreshCcw, label: "Cancele quando quiser" },
+  { Icon: MessageCircle, label: "Suporte em PT-BR" },
 ];
 
 const cols: Array<{
@@ -44,6 +51,19 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        {/* Selos de confiança */}
+        <div className="mb-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {trustBadges.map(({ Icon, label }) => (
+            <div
+              key={label}
+              className="flex items-center gap-3 rounded-2xl border border-border bg-card/40 px-4 py-3"
+            >
+              <Icon className="h-5 w-5 shrink-0 text-brand-pink" />
+              <span className="text-xs font-medium leading-tight">{label}</span>
+            </div>
+          ))}
+        </div>
+
         <div className="grid gap-10 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <Logo />
