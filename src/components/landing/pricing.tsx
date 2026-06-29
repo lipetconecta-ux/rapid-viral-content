@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Check } from "lucide-react";
+import { Check, ShieldCheck } from "lucide-react";
 
 type Plan = {
   name: string;
@@ -11,8 +11,10 @@ type Plan = {
   cta: string;
   highlighted?: boolean;
   free?: boolean;
+  generationsPerMonth?: number;
   features: string[];
 };
+
 
 const plans: Plan[] = [
   {
