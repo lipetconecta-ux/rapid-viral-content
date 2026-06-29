@@ -34,6 +34,7 @@ const plans: Plan[] = [
   {
     name: "Starter",
     monthly: 27.9,
+    generationsPerMonth: 50,
     desc: "Para quem está começando a criar conteúdo viral.",
     cta: "Assinar Starter",
     features: [
@@ -47,6 +48,7 @@ const plans: Plan[] = [
   {
     name: "Pro",
     monthly: 37.9,
+    generationsPerMonth: 100,
     highlighted: true,
     desc: "Para criadores que precisam de mais volume e recursos.",
     cta: "Assinar Pro",
@@ -61,10 +63,11 @@ const plans: Plan[] = [
   {
     name: "Premium",
     monthly: 47.9,
+    generationsPerMonth: 300,
     desc: "Para profissionais e agências em escala máxima.",
     cta: "Assinar Premium",
     features: [
-      "Gerações ilimitadas",
+      "300 gerações por mês",
       "Acesso antecipado a novos recursos",
       "Exportação avançada",
       "Suporte VIP dedicado",
@@ -72,6 +75,7 @@ const plans: Plan[] = [
     ],
   },
 ];
+
 
 const fmt = (n: number) =>
   n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
