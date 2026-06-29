@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Check } from "lucide-react";
+import { Check, ShieldCheck } from "lucide-react";
 
 type Plan = {
   name: string;
@@ -11,8 +11,10 @@ type Plan = {
   cta: string;
   highlighted?: boolean;
   free?: boolean;
+  generationsPerMonth?: number;
   features: string[];
 };
+
 
 const plans: Plan[] = [
   {
@@ -32,6 +34,7 @@ const plans: Plan[] = [
   {
     name: "Starter",
     monthly: 27.9,
+    generationsPerMonth: 50,
     desc: "Para quem está começando a criar conteúdo viral.",
     cta: "Assinar Starter",
     features: [
@@ -45,6 +48,7 @@ const plans: Plan[] = [
   {
     name: "Pro",
     monthly: 37.9,
+    generationsPerMonth: 100,
     highlighted: true,
     desc: "Para criadores que precisam de mais volume e recursos.",
     cta: "Assinar Pro",
@@ -59,10 +63,11 @@ const plans: Plan[] = [
   {
     name: "Premium",
     monthly: 47.9,
+    generationsPerMonth: 300,
     desc: "Para profissionais e agências em escala máxima.",
     cta: "Assinar Premium",
     features: [
-      "Gerações ilimitadas",
+      "300 gerações por mês",
       "Acesso antecipado a novos recursos",
       "Exportação avançada",
       "Suporte VIP dedicado",
@@ -70,6 +75,7 @@ const plans: Plan[] = [
     ],
   },
 ];
+
 
 const fmt = (n: number) =>
   n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -143,15 +149,21 @@ export function Pricing() {
                         </span>
                         <span className="text-muted-foreground">/mês</span>
                       </div>
-                      {annual && (
+                      {annual ? (
                         <div className="mt-1 flex items-center gap-2 text-xs">
                           <span className="text-muted-foreground line-through">
                             R$ {fmt(effective)}/mês
                           </span>
                           <span className="text-brand-pink font-semibold">
-                            2 meses grátis
+                            Economize R$ {fmt(effective * 2)}/ano
                           </span>
                         </div>
+                      ) : (
+                        p.generationsPerMonth && (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            ≈ R$ {fmt(effective / p.generationsPerMonth)} por roteiro viral
+                          </p>
+                        )
                       )}
                     </>
                   )}
@@ -168,10 +180,15 @@ export function Pricing() {
                   <Link to="/auth">{p.cta}</Link>
                 </Button>
 
-                {isFree && (
+                {isFree ? (
                   <p className="mt-2 text-center text-xs text-muted-foreground">
                     Sem cartão de crédito
                   </p>
+                ) : (
+                  <div className="mt-2 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                    <ShieldCheck className="h-3.5 w-3.5 text-brand-pink" />
+                    <span>Garantia de 7 dias</span>
+                  </div>
                 )}
 
                 <ul className="mt-8 space-y-3">
@@ -186,7 +203,19 @@ export function Pricing() {
             );
           })}
         </div>
+
+        <div className="mt-10 flex flex-col items-center gap-2 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-4 py-2 text-sm">
+            <ShieldCheck className="h-4 w-4 text-brand-pink" />
+            <span className="font-medium">Garantia incondicional de 7 dias</span>
+            <span className="text-muted-foreground">— não gostou? devolvemos 100%</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Pagamento 100% seguro · Cancele quando quiser, sem multa · Suporte em PT-BR
+          </p>
+        </div>
       </div>
     </section>
   );
 }
+
