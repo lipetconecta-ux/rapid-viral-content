@@ -214,12 +214,17 @@ export function TextStagger({
 }
 TextStagger.displayName = "TextStagger";
 
+export interface AnimatedContainerDivProps extends HTMLMotionProps<"div"> {
+  transformDirection?: TransformDirectionType;
+  className?: string;
+}
+
 export const AnimatedContainer = React.forwardRef<
-  HTMLParagraphElement,
-  AnimatedContainerProps
+  HTMLDivElement,
+  AnimatedContainerDivProps
 >(({ children, className, transformDirection = "bottom", ...props }, ref) => {
   return (
-    <motion.p
+    <motion.div
       ref={ref}
       initial="hidden"
       animate="visible"
@@ -229,7 +234,7 @@ export const AnimatedContainer = React.forwardRef<
       {...props}
     >
       {children}
-    </motion.p>
+    </motion.div>
   );
 });
 AnimatedContainer.displayName = "AnimatedContainer";
