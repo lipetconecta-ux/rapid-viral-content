@@ -6,7 +6,6 @@ import heroMockup from "@/assets/hero-mockup-ptbr.jpg.asset.json";
 import { resolveAssetUrl } from "@/lib/asset-url";
 import {
   AnimatedContainer,
-  BgGradient,
   Hero as AnimatedHero,
   TextStagger,
 } from "@/components/blocks/hero-animated";
