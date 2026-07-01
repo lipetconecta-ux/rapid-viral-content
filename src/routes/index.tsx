@@ -41,12 +41,13 @@ function LandingPage() {
       <Navbar />
       <main>
         <Hero />
+        <PlatformsMarquee />
         <Benefits />
         <HowItWorks />
         <BeforeAfter />
         <Resources />
-        <Testimonials />
         <ExampleShowcase />
+        <Testimonials />
         <Pricing />
         <Faq />
         <CtaFinal />
