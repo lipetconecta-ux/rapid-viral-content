@@ -150,3 +150,9 @@
 @utility bg-radial-brand {
   background-image: var(--gradient-radial);
 }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
