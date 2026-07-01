@@ -6,7 +6,6 @@ import heroMockup from "@/assets/hero-mockup-ptbr.jpg.asset.json";
 import { resolveAssetUrl } from "@/lib/asset-url";
 import {
   AnimatedContainer,
-  BgGradient,
   Hero as AnimatedHero,
   TextStagger,
 } from "@/components/blocks/hero-animated";
@@ -15,11 +14,24 @@ const heroMockupSrc = resolveAssetUrl(heroMockup);
 
 export function Hero() {
   return (
-    <AnimatedHero className="pt-32 pb-20 sm:pt-40 sm:pb-28">
-      <BgGradient
-        gradientColors="purple"
-        gradientPosition="top"
-        gradientSize="lg"
+    <AnimatedHero className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
+      {/* Starfield background */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 opacity-70"
+        style={{
+          backgroundImage:
+            "radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,0.5) 50%, transparent 51%), radial-gradient(1px 1px at 28% 68%, rgba(236,72,153,0.7) 50%, transparent 51%), radial-gradient(1.2px 1.2px at 44% 12%, rgba(255,255,255,0.55) 50%, transparent 51%), radial-gradient(1px 1px at 63% 78%, rgba(124,58,237,0.7) 50%, transparent 51%), radial-gradient(1px 1px at 78% 30%, rgba(255,255,255,0.5) 50%, transparent 51%), radial-gradient(1.2px 1.2px at 88% 60%, rgba(59,130,246,0.6) 50%, transparent 51%), radial-gradient(1px 1px at 8% 85%, rgba(255,255,255,0.4) 50%, transparent 51%), radial-gradient(1px 1px at 92% 12%, rgba(255,255,255,0.4) 50%, transparent 51%)",
+        }}
+      />
+      {/* Soft ambient glows on sides */}
+      <div
+        aria-hidden
+        className="absolute top-1/3 -left-40 -z-10 h-96 w-96 rounded-full bg-brand-purple/20 blur-[120px]"
+      />
+      <div
+        aria-hidden
+        className="absolute top-1/4 -right-40 -z-10 h-96 w-96 rounded-full bg-brand-pink/20 blur-[120px]"
       />
 
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -30,7 +42,7 @@ export function Hero() {
               className="mb-6 gap-1.5 border-border bg-card/60 px-3 py-1 backdrop-blur"
             >
               <Sparkles className="h-3.5 w-3.5 text-gradient-brand" />
-              <span className="text-xs font-medium">
+              <span className="text-[11px] font-semibold uppercase tracking-wider">
                 Novo: gerador de carrosséis com IA
               </span>
             </Badge>
@@ -106,9 +118,10 @@ export function Hero() {
                 <Star key={i} className="h-4 w-4 fill-brand-pink text-brand-pink" />
               ))}
             </span>
-            <span>4.9/5 · +12.000 criadores usando</span>
+            <span>4.9/5 · +12.000 CRIADORES USANDO</span>
           </AnimatedContainer>
         </div>
+
 
         {/* Mockup */}
         <div className="relative mx-auto mt-16 max-w-6xl">
