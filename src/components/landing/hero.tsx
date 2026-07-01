@@ -119,9 +119,10 @@ export function Hero() {
                 <Star key={i} className="h-4 w-4 fill-brand-pink text-brand-pink" />
               ))}
             </span>
-            <span>4.9/5 · +12.000 criadores usando</span>
+            <span>4.9/5 · +12.000 CRIADORES USANDO</span>
           </AnimatedContainer>
         </div>
+
 
         {/* Mockup */}
         <div className="relative mx-auto mt-16 max-w-6xl">
