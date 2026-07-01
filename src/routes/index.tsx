@@ -12,6 +12,7 @@ import { Faq } from "@/components/landing/faq";
 import { CtaFinal } from "@/components/landing/cta-final";
 import { Footer } from "@/components/landing/footer";
 import { PromoBanner } from "@/components/landing/promo-banner";
+import { PlatformsMarquee } from "@/components/landing/platforms-marquee";
 import { FloatingCta } from "@/components/landing/floating-cta";
 
 export const Route = createFileRoute("/")({
@@ -40,12 +41,13 @@ function LandingPage() {
       <Navbar />
       <main>
         <Hero />
+        <PlatformsMarquee />
         <Benefits />
         <HowItWorks />
         <BeforeAfter />
         <Resources />
-        <Testimonials />
         <ExampleShowcase />
+        <Testimonials />
         <Pricing />
         <Faq />
         <CtaFinal />
